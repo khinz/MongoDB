@@ -1,0 +1,17 @@
+{"type": "FeatureCollection",
+ "features": [
+   { "type": "Feature",
+     "geometry": {"_id" : 201, "miasto" : "Sopot", "type":"Point","coordinates":[ 18.559, 54.439 ]}
+   },
+   { "type": "Feature",
+     "geometry": {"_id" : 172, "miasto" : "Pruszcz Gdański", "type":"Point","coordinates":[ 18.649, 54.255 ]}
+   },
+   { "type": "Feature",
+     "geometry": {"_id" : 43, "miasto" : "Gdynia", "type":"Point","coordinates":[ 18.53, 54.52 ]}
+   },
+   { "type": "Feature",
+     "geometry": {"_id" : 73, "miasto" : "Kartuzy", "type":"Point","coordinates":[ 18.2, 54.329 ]}
+   }
+ ]
+}
+
