@@ -69,6 +69,7 @@ Geograficzny Json :)
 ```
 ![](https://github.com/khinz/MongoDB/blob/master/PointNear.png)
 
+Geo-wynik [miasta.geojson](https://github.com/khinz/MongoDB/blob/master/miasta.geojson)
 
 ##II
 zliczanie miast w promieniu 100km od Gdańska - definicja dla Gdańska i polecenie
