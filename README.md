@@ -4,6 +4,7 @@ Pod maską:
 
 Procesor: Intel(R) Core(TM) i7-3612QM CPU @ 2.10GHz
 RAM: 12 GB DDR3
+
 ---
 
 ##Zadanie 1a
@@ -34,7 +35,7 @@ Zliczyć liczbę zaimportowanych rekordów:
 >6034195
 ```
 
-##Zadanie 1C
+##Zadanie 1c
 
 Zadanie 1c polega na zamianie formatu danych.
 Należy zamienić string zawierający tagi na tablicę napisów z tagami, następnie zliczyć wszystkie tagi i wszystkie różne tagi.
