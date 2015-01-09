@@ -28,6 +28,8 @@ user	1m7.610s
 sys	0m6.167s
 ```
 
+![](https://github.com/khinz/MongoDB/blob/master/TrainLoad.png)
+
 ##Zadanie 1b 
 Zliczyć liczbę zaimportowanych rekordów:
 ```
