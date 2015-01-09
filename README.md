@@ -51,3 +51,51 @@ db.train.find( { "tags" : { $type : 2 } } ).snapshot().forEach(
     db.train.save(x);
 }});
 ```
+
+## Zadanie 1d
+Geograficzny Json :)
+
+##I
+4 miasta, które są ulokowane w pobliżu Gdańska
+```
+> db.Miasta.ensureIndex({"loc" : "2dsphere"})
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 1,
+	"numIndexesAfter" : 2,
+	"ok" : 1
+}
+> db.Miasta.find({ loc: {$near: {$geometry: gdansk.loc}} }).skip(1).limit(4)
+```
+![](https://github.com/khinz/MongoDB/blob/master/PointNear.png)
+
+
+##II
+zliczanie miast w promieniu 100km od Gdańska - definicja dla Gdańska i polecenie
+
+```
+> var gdansk = db.Miasta.findOne({"miasto": "Gdańsk"})
+> db.Miasta.find( { "loc" :{ $near : { $geometry : gdansk.loc , $minDistance : 50000, $maxDistance: 100000 } } }).skip(1).count()
+```
+Wynik: 11
+
+![](https://github.com/khinz/MongoDB/blob/master/count.png)
+
+##III
+zliczanie miast w obszarze poligonu
+
+Najpierw definiujemy wybrane miasta, a potem...
+...tworzymy poligon:
+```
+var polygon = {type: "Polygon", coordinates: [[gdansk.loc.coordinates , olsztyn.loc.coordinates , warszawa.loc.coordinates, lublin.loc.coordinates, opole.loc.coordinates, poznan.loc.coordinates, gdansk.loc.coordinates]]}
+
+```
+
+Zapytanie:
+```
+> db.Miasta.find({"loc" : {"$geoWithin" : {"$geometry" : polygon}}}).count()
+
+```
+Wynik: 87
+
+![](https://github.com/khinz/MongoDB/blob/master/poligon.png)
