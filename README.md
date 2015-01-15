@@ -100,3 +100,120 @@ Zapytanie:
 Wynik: 87
 
 ![](https://github.com/khinz/MongoDB/blob/master/poligon.png)
+
+# Zadanie 2 #
+
+
+Zastosowany plik:
+
+* getglue_sample.json
+
+wybrałem 500 000 pierwszych linii i zapisałem je do pliku... 
+
+* getglue_sample\_cut.json
+
+...a użyłem do tego polecania: 
+
+    head -n 500000 getglue_sample.json > getglue_sample_cut.json
+
+Import do bazy:
+    
+    time ./bin/mongoimport.exe -d nosql -c bigdata --file ../../getglue_sample_cut.json
+
+A trwało to tak:
+
+    real 3m12.214s
+    user 0m0.015s
+    sys  0m0.016s
+
+
+### agregacje ###
+
+Wyświetlenie nazw modeli wraz z ilością wystąpień:
+
+	db.bigdata.aggregate([
+		{ $group: { _id: "$modelName", ilosc: {$sum: 1}} },
+		{ $sort: {ilosc: -1 } },
+		{ $project: { modelName: "$_id", ilosc: "$ilosc", _id: 0} }
+	])
+	
+Rezultaty, mamy, taty:
+
+	{
+		"result" : [
+			{
+					"ilosc" : 1090418,
+					"modelName" : "movies"
+			},
+			{
+					"ilosc" : 909572,
+					"modelName" : "tv_shows"
+			},
+			{
+					"ilosc" : 5,
+					"modelName" : "recording_artists"
+			},
+			{
+					"ilosc" : 5,
+					"modelName" : "topics"
+			}
+		],
+		"ok" : 1
+	}
+
+Zliczenie użytkowników, którzy mają ponad 7600 rekordów:
+	
+	db.bigdata.aggregate([
+		{ $group: { _id: "$userId", ilosc: {$sum: 1}} },
+		{ $sort: {ilosc: -1 } },
+		{ $match: { ilosc: {$gte : 7600 } } },
+		{ $project: { userId: "$_id", ilosc: "$ilosc", _id: 0 }}
+	])
+	
+Mama, tata, rezultata:
+
+	{
+        "result" : [
+                {
+                        "ilosc" : 13585,
+                        "userId" : "jesusvarelaacosta"
+                },
+                {
+                        "ilosc" : 13141,
+                        "userId" : "LilMissCakeCups"
+                },
+                {
+                        "ilosc" : 12946,
+                        "userId" : "johnnym2001"
+                },
+                {
+                        "ilosc" : 11764,
+                        "userId" : "erwin_ali_perdana"
+                },
+                {
+                        "ilosc" : 11513,
+                        "userId" : "endika"
+                },
+                {
+                        "ilosc" : 11352,
+                        "userId" : "cathy_blessing_hughes"
+                },
+                {
+                        "ilosc" : 9737,
+                        "userId" : "khairulazmas"
+                },
+                {
+                        "ilosc" : 8778,
+                        "userId" : "maria_santana1"
+                },
+                {
+                        "ilosc" : 8683,
+                        "userId" : "samnaeev"
+                },
+                {
+                        "ilosc" : 7668,
+                        "userId" : "wididip"
+                }
+        ],
+        "ok" : 1
+	}
