@@ -217,3 +217,115 @@ Mama, tata, rezultata:
         ],
         "ok" : 1
 	}
+
+# Zadanie 3 #
+# Przygotować funkcje map i reduce, które: #
+
+
+* wyszukają wszystkie anagramy w pliku word_list.txt 
+
+"Anagram – nazwa wywodząca się od słów greckich: ana- (nad) oraz grámma (litera), oznacza wyraz, wyrażenie lub całe zdanie powstałe przez przestawienie liter bądź sylab innego wyrazu lub zdania, wykorzystujące wszystkie litery (głoski bądź sylaby) materiału wyjściowego"
+
+Import pliku z nagłówkiem id i word, następnie map-reduce. 
+
+```js
+mongoimport -c words -d nosql--file K:\MongoDB\words.csv --type csv --headerline
+```
+
+
+Czas na mapreduce. Internety podsunęły mi poniższe rozwiązanie - js:
+```
+t = db.words;
+db.letters.out.drop(); // drop collection if exists
+
+//Map
+m = function() {
+var xx = this.word.split("").sort().toString(); //split word to single characters and sort them
+emit(xx,this.word); //emit this array as key , and word as a value , so words which have anagrams will be emitted at least twice
+};
+
+//Reduce
+r = function(key, value) {
+return results.toString(); // return string (for some reason reduce method must return the same type as emited value)
+};
+var finalize = function(key, reducedValue) { // finalize for simpler recognition which word has anagram, we could also run map-reduce once more and extract only those which have
+if(reducedValue.length > 6 )
+return reducedValue; //every word has 6chars, so if our string contains more, that means whit have at least 2 anagrams
+else
+return reducedValue=null; //we set value filed to null to indicate that this words has no anagrams in database
+//later db.letters.out.find({$type:2})
+};
+
+res = t.mapReduce( m, r, {out: 'letters.out',finalize: finalize});
+//db.letters.find();
+db.letters.out.find();
+```
+
+```js
+{
+    "result" : "letters.out",
+    "timeMillis" : 396,
+    "counts" : {
+        "input" : 8199,
+        "emit" : 8199,
+        "reduce" : 914,
+        "output" : 7011
+    },
+...
+
+```
+
+Liczba Anagramów: 914
+
+A oto kilka z nich... 
+
+```js
+db['letters.out'].find({value:{$type:2}}).sort({id:-1})
+
+```
+```js
+
+
+{
+    "_id" : "a,a,b,l,s,t",
+    "value" : "basalt,tablas"
+}
+
+{
+    "_id" : "a,a,b,m,n,t",
+    "value" : "bantam,batman"
+}
+
+{
+    "_id" : "a,a,c,e,t,v",
+    "value" : "caveat,vacate"
+}
+
+{
+    "_id" : "a,a,c,i,m,n",
+    "value" : "caiman,maniac"
+}
+
+{
+    "_id" : "a,a,c,l,r,s",
+    "value" : "rascal,scalar"
+}
+
+
+{
+    "_id" : "a,b,i,n,r,s",
+    "value" : "bairns,brains"
+}
+
+{
+    "_id" : "a,b,i,n,r,y",
+    "value" : "binary,brainy"
+}
+
+{
+    "_id" : "a,b,m,r,s,u",
+    "value" : "umbras,rumbas"
+}
+
+
+```
