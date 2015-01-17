@@ -341,33 +341,9 @@ db['letters.out'].find({value:{$type:2}}).sort({id:-1})
 * Przekonwertowałem wiki dump do formatu .json pozostawiając pola:id, tytuł, url, tekst i przypsiy. 
 
 Przykład otrzymanego jsona:
-```
-{
-	"_id" : ObjectId("54afddb38009de6b59e6c876"),
-	"url" : "http://en.wikipedia.org/wiki/Alergologia",
-	"text" : "Alergologia.\nAlergologia - dziedzina medycyny zajmująca się rozpoznawaniem i leczeniem schorzeń alergicznych.",
-	"id" : [
-		4
-	],
-	"annotations" : [
-		{
-			"surface_form" : "medycyny",
-			"uri" : "Medycyna",
-			"offset" : 37
-		},
-		{
-			"surface_form" : "leczeniem",
-			"uri" : "Leczenie",
-			"offset" : 77
-		},
-		{
-			"surface_form" : "schorzeń alergicznych",
-			"uri" : "Alergia",
-			"offset" : 87
-		}
-	]
-}
-```
+
+![] (https://github.com/khinz/MongoDB/blob/master/przykladowy_rekord.png)
+
 Ograniczyłem mój wiki dump  tylko do pierwszych 5 000 000 wierszy z wykorzystaniem polecenia:
 ```
 head -n 5000000 wikidump.xml > obojetnie.xml
