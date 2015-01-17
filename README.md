@@ -219,10 +219,14 @@ Mama, tata, rezultata:
 	}
 
 # Zadanie 3 #
+
+# "Koń jaki jest, każdy widzi"
+
+
 # Przygotować funkcje map i reduce, które: #
 
 
-* wyszukają wszystkie anagramy w pliku word_list.txt 
+# wyszukają wszystkie anagramy w pliku word_list.txt #
 
 "Anagram – nazwa wywodząca się od słów greckich: ana- (nad) oraz grámma (litera), oznacza wyraz, wyrażenie lub całe zdanie powstałe przez przestawienie liter bądź sylab innego wyrazu lub zdania, wykorzystujące wszystkie litery (głoski bądź sylaby) materiału wyjściowego"
 
@@ -328,4 +332,108 @@ db['letters.out'].find({value:{$type:2}}).sort({id:-1})
 }
 
 
+```
+
+# wyszukają najczęściej występujące słowa z Wikipedia data PL aktualny plik z artykułami, ok. 1.3 GB #
+
+* Pobrałem wiki dump Wikipedii
+
+* Przekonwertowałem wiki dump do formatu .json pozostawiając pola:id, tytuł, url, tekst i przypsiy. 
+
+Przykład otrzymanego jsona:
+```
+{
+	"_id" : ObjectId("54afddb38009de6b59e6c876"),
+	"url" : "http://en.wikipedia.org/wiki/Alergologia",
+	"text" : "Alergologia.\nAlergologia - dziedzina medycyny zajmująca się rozpoznawaniem i leczeniem schorzeń alergicznych.",
+	"id" : [
+		4
+	],
+	"annotations" : [
+		{
+			"surface_form" : "medycyny",
+			"uri" : "Medycyna",
+			"offset" : 37
+		},
+		{
+			"surface_form" : "leczeniem",
+			"uri" : "Leczenie",
+			"offset" : 77
+		},
+		{
+			"surface_form" : "schorzeń alergicznych",
+			"uri" : "Alergia",
+			"offset" : 87
+		}
+	]
+}
+```
+Ograniczyłem mój wiki dump  tylko do pierwszych 5 000 000 wierszy z wykorzystaniem polecenia:
+```
+head -n 5000000 wikidump.xml > obojetnie.xml
+```
+Okrojony wiki dump sparsowałem do formatu json poleceniem:
+```
+bzip2 -dc obojetnie.xml.tar.bz2 | python annotated_wikiextractor.py
+```
+Pozostało tylko:
+- złączenie plików za pomocą polecenia:
+```
+cat $(find -name "*" | sort) > wiki.json
+
+```
+- zaimportowanie do mongo kolekcji:
+```
+mongoimport -d wiki -c wiki --file wiki.json
+```
+
+W mongo zdefiniowałem funkcje map i reduce:
+```
+var map = function() {  
+    var tekst = this.text;
+    if (tekst) { 
+      
+        tekst = tekst.toLowerCase().split(" "); 
+        for (var i = tekst.length - 1; i >= 0; i--) {
+           
+            if (tekst[i])  {      
+               emit(tekst[i], 1);
+            }
+        }
+    }
+};
+
+var reduce = function( key, values ) {    
+    var licz = 0;    
+    values.forEach(function(v) {            
+        licz +=v;    
+    });
+    return licz;
+};
+
+db.xml.mapReduce(map, reduce, {out: "zlicz"});
+```
+Mamy, taty, rezultaty...:
+```
+db.zlicz.find().sort({value:-1})
+{ "_id" : "w", "value" : 129735 }
+{ "_id" : "i", "value" : 79788 }
+{ "_id" : "z", "value" : 55150 }
+{ "_id" : "na", "value" : 53334 }
+{ "_id" : "się", "value" : 47263 }
+{ "_id" : "do", "value" : 40125 }
+{ "_id" : "jest", "value" : 26801 }
+{ "_id" : "–", "value" : 19938 }
+{ "_id" : "przez", "value" : 17332 }
+{ "_id" : "nie", "value" : 16535 }
+{ "_id" : "a", "value" : 16352 }
+{ "_id" : "od", "value" : 15168 }
+{ "_id" : "oraz", "value" : 13862 }
+{ "_id" : "o", "value" : 13183 }
+{ "_id" : "to", "value" : 12712 }
+{ "_id" : "że", "value" : 11653 }
+{ "_id" : "po", "value" : 10809 }
+{ "_id" : "roku", "value" : 10727 }
+{ "_id" : "są", "value" : 9844 }
+{ "_id" : "jako", "value" : 8769 }
 ```
